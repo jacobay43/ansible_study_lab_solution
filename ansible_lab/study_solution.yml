@@ -37,15 +37,29 @@
   - name: uninstall FIRE Backend Programs
     win_package:
       path: E:\IRS\FIRE_Backend_Programs_Deploy.msi
-      state: present
+      state: absent
   - name: back-out plan
     win_shell: copy 'E:\IRS\BackUpFor_ FIRE14WIN-SP-OTH-2022012\FIRE_Backend_Programs_Deploy.msi' E:\IRS\FIRE_Backend_Programs_Deploy.msi
     args:
       executable: cmd.exe
-  - name: perform install/uninstall again
+  - name: perform install of backup
     win_package:
       path: E:\IRS\FIRE_Backend_Programs_Deploy.msi
       state: present
+  - name: install ODBC driver required by sqlcmd
+    win_package:
+      path: 'https://go.microsoft.com/fwlink/?linkid=2214634' #url to ODBC driver
+      state: present
+    when: ansible_distribution == 'Windows'
+  - name: install sqlcmd utility
+    win_package:
+      path: 'https://go.microsoft.com/fwlink/?linkid=2142258' #url to sqlcmd utility used for running SQL scripts from the command line
+      state: present
+    when: ansible_distribution == 'Windows'
+  - name: run BOYSCRIPT.sql agains IRS_FIRE2 database
+    win_command: sql_cmd -S IRS_FIRE2 -i BOYScript.sql
+    register: sqmcmd_out
+    when: ansible_distribution == 'Windows'
   - name: uncomment PROD CSR background color
     community.windows.win_lineinfile:
        path: E:\UI.css
