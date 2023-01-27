@@ -73,6 +73,21 @@
        path: "{{ui_window_path[0]}}"
        regex: 'background-color: #FFE4E1 /\*TPTest Color\*/'
        line: '/*background-color: #FFE4E1 /*TPTest Color*/'
+  - name: Uninstall FIREv1R Presentation Layer
+    win_package:
+      path: "E:\\IRS\\firev1r presentation layer installer.msi"
+      state: absent
+  - name: Create physical path for virtual directory
+    win_file:
+      path: "E:\\virtualdirectory\\IRS"
+      state: directory
+  - name: Create Blank Virtual Directory
+    community.windows.win_iis_virtualdirectory:
+      name: Blank
+      site: FIREv1r
+      application: FIREv1rAppPool4.0
+      state: present
+      physical_path: "E:\\virtualdirectory\\IRS"
 
 - hosts: JOBS
   become: true
