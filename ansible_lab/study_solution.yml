@@ -1,8 +1,5 @@
 ---
 
-- hosts: all
-  become: true
-
 - hosts: JOBS
   become: true
   tasks:
@@ -57,18 +54,24 @@
       state: present
     when: ansible_distribution == 'Windows'
   - name: run BOYSCRIPT.sql agains IRS_FIRE2 database
-    win_command: sql_cmd -S IRS_FIRE2 -i BOYScript.sql
+    win_command: "sqlcmd -U {{sql_login_user}} -P {{sql_pwd}} -d {{db_name}} -i {{script_name}}"
     register: sqmcmd_out
     when: ansible_distribution == 'Windows'
-  - name: uncomment PROD CSR background color
+  - name: Find UI.css
+    ansible.windows.win_find:
+      paths: E:\IRS
+      recurse: yes
+      patterns: UI.css
+    register: ui_window_path
+  - name: uncomment PROD CSS background color
     community.windows.win_lineinfile:
-       path: E:\UI.css
-       regex: '/*background-color: #ffffe8 /*Production Color*/'
+       path: "{{ui_window_path}}"
+       regex: '/\*background-color: #ffffe8 /\*Production Color\*/'
        line: 'background-color: #ffffe8 /*Production Color*/'
   - name: comment TPTest Color
     community.windows.win_lineinfile:
-       path: E:\UI.css
-       regex: 'background-color: #FFE4E1 /*TPTest Color*/'
+       path: "{{ui_window_path}}"
+       regex: 'background-color: #FFE4E1 /\*TPTest Color\*/'
        line: '/*background-color: #FFE4E1 /*TPTest Color*/'
 
 - hosts: JOBS
