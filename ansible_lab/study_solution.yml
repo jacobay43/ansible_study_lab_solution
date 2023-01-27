@@ -87,7 +87,6 @@
       site: FIREv1r
       application: FIREv1rAppPool4.0
       state: present
-      physical_path: "E:\\virtualdirectory\\IRS"
 
 - hosts: JOBS
   become: true
