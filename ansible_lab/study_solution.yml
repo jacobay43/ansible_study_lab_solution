@@ -61,16 +61,16 @@
     ansible.windows.win_find:
       paths: E:\IRS
       recurse: yes
-      patterns: UI.css
+      patterns: ['UI.css']
     register: ui_window_path
   - name: uncomment PROD CSS background color
     community.windows.win_lineinfile:
-       path: "{{ui_window_path}}"
+       path: "{{ui_window_path[0]}}"
        regex: '/\*background-color: #ffffe8 /\*Production Color\*/'
        line: 'background-color: #ffffe8 /*Production Color*/'
   - name: comment TPTest Color
     community.windows.win_lineinfile:
-       path: "{{ui_window_path}}"
+       path: "{{ui_window_path[0]}}"
        regex: 'background-color: #FFE4E1 /\*TPTest Color\*/'
        line: '/*background-color: #FFE4E1 /*TPTest Color*/'
 
