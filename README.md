@@ -11,4 +11,4 @@ To install ansible via WSL2 on Windows machine
 To run the solution playbook
 - `cd ansible_lab`
 - update server IPs or domain names in "inventory" file
-- `ansible-playbook --ask-become-pass study_solution.yml`
+- `ansible-playbook --ask-become-pass study_solution.yml --extra-vars '{"sql_login_user":"DBAUSERNAME","sql_pwd":"DBAPASSWORD","db_name":"IRS_FIRE2","script_name":"BOYScript.sql"}`
