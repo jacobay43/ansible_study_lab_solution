@@ -38,11 +38,20 @@
   - name: back-out plan
     win_shell: copy 'E:\IRS\BackUpFor_ FIRE14WIN-SP-OTH-2022012\FIRE_Backend_Programs_Deploy.msi' E:\IRS\FIRE_Backend_Programs_Deploy.msi
     args:
-      executable: cmd.exe
+      executable: cmd
   - name: perform install of backup
     win_package:
       path: E:\IRS\FIRE_Backend_Programs_Deploy.msi
       state: present
+  - name: Create Backup directory for IRS_FIRE2 database
+    win_file:
+      path: E:\IRS\DB_BACKUPS
+      state: directory
+  - name: Backup directory for IRS_FIRE2 database (MySQL)
+    mysql_db: #if database is PostgreSQL, replace this line with postgresql_db
+      state: dump
+      name: '{{db_name}}'
+      target: 'E:\IRS\DB_BACKUPS\{{db_name}}-{{ansible_date_time.date}}-{{ansible_date_time.time}}.sql'
   - name: install ODBC driver required by sqlcmd
     win_package:
       path: 'https://go.microsoft.com/fwlink/?linkid=2214634' #url to ODBC driver
@@ -77,6 +86,10 @@
     win_package:
       path: "E:\\IRS\\firev1r presentation layer installer.msi"
       state: absent
+  - name: Create physical path for virtual directory
+    win_file:
+      path: "E:\\virtualdirectory\\IRS"
+      state: directory
   - name: Create Blank Virtual Directory
     community.windows.win_iis_virtualdirectory:
       name: Blank
